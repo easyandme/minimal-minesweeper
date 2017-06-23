@@ -94,41 +94,28 @@
     let size = 10
     let tiles = []
 
-    let neighbours = null
-
     const $minesweeper = document.getElementById('Minesweeper')
 
-    // Factory function for finding neighbours of tiles,
-    // caches results for minor performace efficiency
-    const Neighbours = () => {
-        const cache = {}
+    // function for finding neighbours of tiles,
+    function neighbours(tileIndex) {
+        const neighbours = []
 
-        return function(tileIndex) {
-            if (cache[tileIndex]) return cache[tileIndex]
+        const [row, col] = [Math.floor(tileIndex / size), tileIndex % size]
 
-            const neighbours = []
+        Array(-1, 0, 1).forEach(y => Array(-1, 0, 1).forEach(x => {
+            if (!x && !y) return
 
-            const [row, col] = [Math.floor(tileIndex / size), tileIndex % size]
+            const [_row, _col] = [row + y, col + x]
 
-            Array(-1, 0, 1).forEach(y => Array(-1, 0, 1).forEach(x => {
-                if (!x && !y) return
+            if (_row < 0 || _row >= size || _col < 0 || _col >= size) return
 
-                const [_row, _col] = [row + y, col + x]
+            neighbours.push(_row * size + _col)
+        }))
 
-                if (_row < 0 || _row >= size || _col < 0 || _col >= size) return
-
-                neighbours.push(_row * size + _col)
-            }))
-
-            cache[tileIndex] = neighbours
-
-            return cache[tileIndex]
-        }
+        return neighbours
     }
 
     function generate() {
-        neighbours = Neighbours() // new instance of neighbour function
-
         // create list of tiles with right amount of mines (represented as -1)
         tiles = Array(size * size - mines).fill(0).concat(Array(mines).fill(-1))
 
