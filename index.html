@@ -84,7 +84,6 @@
 </head>
 <body>
 
-
 <h1>Minesweeper</h1>
 <div id="Minesweeper"></div>
 <button onclick="start()">restart game</button>
@@ -137,7 +136,6 @@
 
         // Add the tile elements
         tiles.forEach((value, index) => {
-            // add a tile span
             const $tile = document.createElement('span')
             $tile.classList.add('tile')
             $minesweeper.appendChild($tile)
@@ -155,7 +153,6 @@
             $tile.addEventListener('click', ({ target }) => {
                 const $tiles = Array.from(document.querySelectorAll('.tile'))
 
-                // open the tile
                 $tile.classList.add('open')
 
                 // landing on a mine? dang. game over
@@ -180,17 +177,16 @@
 
                 // got a zero? clear it and its neighbours to find the numbers
                 if (value == 0) {
-
                     // clear is a breadth first search to check neighbours
                     const clear = new Promise(resolve => {
                         const visited = {} // track which tiles have been checked
                         const queue = [index] // start with the current tile
 
                         const checkNeighbours = () => setTimeout(() => {
-                            const nextTile = queue.shift() // remove next tile
+                            const nextTile = queue.shift() // remove next tile from queue
                             visited[nextTile] = true // remember we checked it
 
-                            // get all the neighbours we haven't visited and open then
+                            // get all the neighbours we haven't visited and open them
                             neighbours(nextTile).filter(n => !visited[n]).forEach(n => {
                                 $tiles[n].classList.add('open')
 
@@ -206,7 +202,6 @@
                         checkNeighbours()
                     })
 
-                    // do the clearing, then check if you won
                     clear.then(checkWin)
                 }
             })
@@ -214,13 +209,10 @@
     }
 
     function checkWin() {
-        // get the un-opened tiles
         const remainingTiles = Array.from(document.querySelectorAll('.tile:not(.open)'))
 
-        // if their are more un-opened tiles than mines, you got work to do
         if (remainingTiles.length > mines) return
 
-        // otherwise, you won!
         remainingTiles.forEach(tile => tile.classList.add('mine'))
 
         const $heading = document.createElement('h2')
