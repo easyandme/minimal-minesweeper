@@ -3,83 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Minesweeper.js</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: sans-serif;
-        }
-
-        #Minesweeper {
-            font-size: 0;
-            margin: 10px;
-        }
-
-        #Minesweeper h2 {
-            font-size: 20px;
-        }
-
-        .win, .lose {
-            display: none;
-        }
-
-        .tile {
-            width: 30px;
-            line-height: 30px;
-            text-align: center;
-            overflow: auto;
-            height: 30px;
-            background: #E5F8FE;
-            box-shadow: inset 0 0 1px #89DDFC;
-            display: inline-block;
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            overflow: hidden;
-            font-size: 0;
-        }
-
-        .tile.open, .gameover .tile {
-            cursor: default;
-            background: #E5FBEF;
-            box-shadow: inset 0 0 1px #FFFFFF;
-            font-size: 13px;
-        }
-
-        .gameover .tile.mine {
-            font-family: serif;
-            font-size: 25px;
-            background: #FF4841;
-            color: #FFC9C7;
-        }
-
-        .winner .tile:not(.open) {
-            font-family: serif;
-            font-size: 25px;
-            background: #2ecc38;;
-            color: #ffffff;
-        }
-
-        .winner h2 {
-            color: #2ecc38;
-        }
-
-        .gameover h2 {
-            color: #FF4841;
-        }
-
-        .tile.mine::before, .winner .tile:not(.open)::before {
-            content: '☉'
-        }
-
-        .tile.flag {
-            color: #ffffff;
-            background: #2ecc38;;
-            font-size: 20px;
-        }
-
-        .tile.flag::before {
-            content: '⚑'
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -92,18 +16,18 @@
     let size = 10
     let tiles = []
 
-    const $minesweeper = document.getElementById('Minesweeper')
+    const $map = document.getElementById('Minesweeper')
 
     // function for finding neighbours of tiles,
     function neighbours(tileIndex) {
         const neighbours = []
-
+        const helperArr = [-1, 0, 1]
         const [row, col] = [Math.floor(tileIndex / size), tileIndex % size]
 
-        Array(-1, 0, 1).forEach(y => Array(-1, 0, 1).forEach(x => {
+        helperArr.forEach(x => helperArr.forEach(y => {
             if (!x && !y) return
 
-            const [_row, _col] = [row + y, col + x]
+            const [_row, _col] = [row + x, col + y]
 
             if (_row < 0 || _row >= size || _col < 0 || _col >= size) return
 
@@ -117,28 +41,30 @@
         tiles = []
 
         // create a list of tiles with randomly positioned mines (represented as -1)
-        for (let m = mines, i = size * size; i; i--) {
+        for (let m = mines, i = size * size; i > 0; --i) {
             tiles.push((Math.floor(Math.random() * i) < m && m-- > -1) * -1)
         }
 
         // go through the tiles and figure out the hint numbers for the mines
         tiles.forEach((value, index) => {
-            if (value == -1) neighbours(index).forEach(n => tiles[n] != -1 && tiles[n]++)
+            if (value == -1) {
+                neighbours(index).forEach(n => tiles[n] !== -1 && ++tiles[n])
+            }
         })
     }
 
     function render() {
-        $minesweeper.classList = [] // clean state
-        $minesweeper.innerHTML = '' // empty board
+        $map.classList = [] // clean state
+        $map.innerHTML = '' // empty board
 
         // Add the tile elements
         tiles.forEach((value, index) => {
             const $tile = document.createElement('span')
-            $tile.classList.add('tile')
-            $minesweeper.appendChild($tile)
+            $tile.classList.add('cell')
+            $map.appendChild($tile)
 
             // add a new row if needed
-            if ((index + 1) % size == 0) $minesweeper.appendChild(document.createElement('div'))
+            if ((index + 1) % size == 0) $map.appendChild(document.createElement('div'))
 
             // right click adds flags
             $tile.addEventListener('contextmenu', (e) => {
@@ -148,12 +74,11 @@
 
             // regular click plays the game
             $tile.addEventListener('click', ({ target }) => {
-                const $tiles = Array.from(document.querySelectorAll('.tile'))
+                const $tiles = Array.from(document.querySelectorAll('.cell'))
+                target.classList.add('open')
 
-                $tile.classList.add('open')
-
-                // landing on a mine? dang. game over
-                if (value == -1) {
+                // landing on a mine?
+                if (value === -1) {
                     tiles.forEach((value, index) => {
                         if (value < 0) $tiles[index].classList.add('mine')
                         if (value > 0) $tiles[index].innerHTML = value
@@ -161,9 +86,9 @@
 
                     const $heading = document.createElement('h2')
                     $heading.innerHTML = 'Game Over'
-                    $minesweeper.appendChild($heading)
+                    $map.appendChild($heading)
 
-                    return $minesweeper.classList.add('gameover')
+                    return $map.classList.add('gameover')
                 }
 
                 // got a number? show it and see if you won
@@ -206,7 +131,7 @@
     }
 
     function checkWin() {
-        const remainingTiles = Array.from(document.querySelectorAll('.tile:not(.open)'))
+        const remainingTiles = Array.from(document.querySelectorAll('.cell:not(.open)'))
 
         if (remainingTiles.length > mines) return
 
@@ -214,17 +139,18 @@
 
         const $heading = document.createElement('h2')
         $heading.innerHTML = 'You won!'
-        $minesweeper.appendChild($heading)
+        $map.appendChild($heading)
 
-        $minesweeper.classList.add('winner')
+        $map.classList.add('winner')
     }
 
-    function start() {
+    const start = () => {
         generate()
         render()
     }
 
     start()
+
 </script>
 </body>
 </html>

@@ -1,0 +1,75 @@
+body {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#Minesweeper {
+    font-size: 0;
+    margin: 10px;
+}
+
+#Minesweeper h2 {
+    font-size: 20px;
+}
+
+.win, .lose {
+    display: none;
+}
+
+.cell {
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    overflow: auto;
+    height: 30px;
+    background: #E5F8FE;
+    box-shadow: inset 0 0 1px #89DDFC;
+    display: inline-block;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    overflow: hidden;
+    font-size: 0;
+}
+
+.cell.open, .gameover .cell {
+    cursor: default;
+    background: #E5FBEF;
+    box-shadow: inset 0 0 1px #FFFFFF;
+    font-size: 13px;
+}
+
+.gameover .cell.mine {
+    font-family: serif;
+    font-size: 25px;
+    background: #FF4841;
+    color: #FFC9C7;
+}
+
+.winner .cell:not(.open) {
+    font-family: serif;
+    font-size: 25px;
+    background: #2ecc38;;
+    color: #ffffff;
+}
+
+.winner h2 {
+    color: #2ecc38;
+}
+
+.gameover h2 {
+    color: #FF4841;
+}
+
+.cell.mine::before, .winner .cell:not(.open)::before {
+    content: '☉'
+}
+
+.cell.flag {
+    color: #ffffff;
+    background: #2ecc38;;
+    font-size: 20px;
+}
+
+.cell.flag::before {
+    content: '⚑'
+}
