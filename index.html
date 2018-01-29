@@ -9,12 +9,16 @@
 
 <h1>Minesweeper</h1>
 <div id="Minesweeper"></div>
-<button onclick="start()">restart game</button>
-
+<form>
+    Rows: <input type="number" id="rows" name="rows" min="5" max="20" value="10"><br>
+    Mines: <input type="number" id="mines" name="mines" min="5" max="20" value="10"><br>
+</form>
+<button onclick="start()">start game</button>
 <script>
     let mines = 10
     let size = 10
     let tiles = []
+    let gameover = false
 
     const $map = document.getElementById('Minesweeper')
 
@@ -78,15 +82,17 @@
                 target.classList.add('open')
 
                 // landing on a mine?
-                if (value === -1) {
+                if (value === -1 && !gameover) {
                     tiles.forEach((value, index) => {
                         if (value < 0) $tiles[index].classList.add('mine')
                         if (value > 0) $tiles[index].innerHTML = value
                     })
 
+
                     const $heading = document.createElement('h2')
                     $heading.innerHTML = 'Game Over'
                     $map.appendChild($heading)
+                    gameover = true
 
                     return $map.classList.add('gameover')
                 }
@@ -136,15 +142,20 @@
         if (remainingTiles.length > mines) return
 
         remainingTiles.forEach(tile => tile.classList.add('mine'))
-
-        const $heading = document.createElement('h2')
-        $heading.innerHTML = 'You won!'
-        $map.appendChild($heading)
+        if (!gameover) {
+            const $heading = document.createElement('h2')
+            $heading.innerHTML = 'You won!'
+            $map.appendChild($heading)
+            gameover = true
+        }
 
         $map.classList.add('winner')
     }
 
     const start = () => {
+        mines = document.getElementById('mines').value
+        size = document.getElementById('rows').value
+        gameover = false
         generate()
         render()
     }

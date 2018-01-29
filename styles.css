@@ -73,3 +73,9 @@ body {
 .cell.flag::before {
     content: '⚑'
 }
+form {
+    margin: 6px 0;
+}
+form input {
+    margin: 2px 0;
+}
